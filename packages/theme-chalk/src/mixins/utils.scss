@@ -1,0 +1,43 @@
+// 清除浮动布局中的浮动影响
+@mixin utils-clearfix {
+  $selector: &;
+
+  @at-root {
+    #{$selector}::before,
+    #{$selector}::after {
+      display: table;
+      content: '';
+    }
+    #{$selector}::after {
+      clear: both;
+    }
+  }
+}
+
+// 实现垂直居中对齐
+@mixin utils-vertical-center {
+  $selector: &;
+
+  @at-root {
+    #{$selector}::after {
+      display: inline-block;
+      content: '';
+      height: 100%;
+      vertical-align: middle;
+    }
+  }
+}
+
+// 实现文本溢出省略显示效果
+@mixin utils-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// 创建内联弹性盒子并实现内容居中
+@mixin utils-inline-flex-center {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,0 +1,9 @@
+{
+  "name": "@qi-ui/test-utils",
+  "license": "ISC",
+  "dependencies": {
+    "@vue/test-utils": "catalog:",
+    "lodash-unified": "catalog:",
+    "vue": "catalog:"
+  }
+}

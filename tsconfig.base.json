@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "target": "es2022",
+    "module": "esnext",
+    "baseUrl": ".",
+    "sourceMap": false,
+    "moduleResolution": "node",
+    "allowJs": false,
+    "strict": true,
+    "noUnusedLocals": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "removeComments": false,
+    "rootDir": ".",
+    "types": [],
+    "paths": {
+      "@qi-ui/components": ["packages/components"],
+      "@qi-ui/components/*": ["packages/components/*"],
+      "@qi-ui/utils": ["packages/utils"],
+      "@qi-ui/utils/*": ["packages/utils/*"],
+      "@qi-ui/hooks": ["packages/hooks"],
+      "@qi-ui/directives": ["packages/directives"],
+      "@qi-ui/constants": ["packages/constants"],
+      "@qi-ui/locale": ["packages/locale"],
+      "@qi-ui/locale/*": ["packages/locale/*"],
+      "qi-ui": ["packages/qi-ui"]
+    },
+    "preserveSymlinks": true
+  }
+}

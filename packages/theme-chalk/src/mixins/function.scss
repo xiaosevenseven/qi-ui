@@ -1,0 +1,114 @@
+@use 'config';
+@use 'sass:meta';
+@use 'sass:string';
+@use 'sass:math';
+@use 'sass:color';
+
+// 选择器转换为字符串
+@function selectorToString($selector) {
+  // 将选择器转换为字符串表示。例如，选择器 .el-button 会变成 "(.el-button,)"（带有括号和引号的格式）
+  $selector: meta.inspect($selector);
+  // 去掉 meta.inspect() 返回结果两端的括号，得到纯净的选择器字符串
+  $selector: string.slice($selector, 2, -2);
+  @return $selector;
+}
+
+// 判断选择器是否包含修饰符
+@function containsModifier($selector) {
+  $selector: selectorToString($selector);
+
+  // 查找选择器字符串中是否包含修饰符分隔符
+  @if string.index($selector, config.$modifier-separator) {
+    @return true;
+  } @else {
+    @return false;
+  }
+}
+
+// 判断选择器是否包含状态符
+@function containWhenFlag($selector) {
+  $selector: selectorToString($selector);
+  @if string.index($selector, config.$state-prefix) {
+    @return true;
+  } @else {
+    @return false;
+  }
+}
+
+// 判断一个选择器是否已经包含伪类
+@function containPseudoClass($selector) {
+  $selector: selectorToString($selector);
+
+  @if string.index($selector, ':') {
+    @return true;
+  } @else {
+    @return false;
+  }
+}
+
+// 判断选择器是否包含 修饰符/状态符/伪类
+@function hitAllSpecialNestRule($selector) {
+  @return containsModifier($selector) or containWhenFlag($selector) or
+    containPseudoClass($selector);
+}
+
+// 组装变量名
+// joinVarName(('button', 'text-color')) => '--qi-button-text-color'
+@function joinVarName($list) {
+  $name: '--' + config.$namespace;
+  @each $item in $list {
+    @if $item != '' {
+      $name: $name + '-' + $item;
+    }
+  }
+  @return $name;
+}
+
+// 获取 CSS 样式变量名
+// getCssVarName('button', 'text-color') => '--el-button-text-color'
+@function getCssVarName($args...) {
+  @return joinVarName($args);
+}
+
+// 获取 CSS 变量值
+// getCssVar('button', 'text-color') => var(--el-button-text-color)
+@function getCssVar($args...) {
+  @return var(#{joinVarName($args)});
+}
+
+// 获取 CSS 样式变量值，如果没有则返回默认值
+@function getCssValWithDefault($args, $default) {
+  @return var(#{joinVarName($args)}, #{$default});
+}
+
+// 用于生成符合 BEM 命名规范的 CSS 类名
+// bem('button') => 'el-button'
+// bem('button', 'text') => 'el-button__text'
+// bem('button', '', 'primary') => 'el-button--primary'
+// bem('button', 'text', 'primary') => 'el-button__text--primary'
+@function bem($block, $element: '', $modifier: '') {
+  $name: config.$namespace + config.$modifier-separator + $block;
+
+  @if $element != '' {
+    $name: $name + config.$element-separator + $element;
+  }
+
+  @if $modifier != '' {
+    $name: $name + config.$modifier-separator + $modifier;
+  }
+
+  @return $name;
+}
+
+// 对颜色的 RGBA 通道值进行四舍五入，确保颜色值是整数
+@function roundColor($color) {
+  //提取并四舍五入 Red（红色）通道
+  $r: math.round(color.channel($color, 'red'));
+  $g: math.round(color.channel($color, 'green'));
+  $b: math.round(color.channel($color, 'blue'));
+  // 透明度保持原始值
+  $a: color.channel($color, 'alpha');
+
+  // 返回四舍五入后的颜色
+  @return rgba($r, $g, $b, $a);
+}

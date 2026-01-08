@@ -1,0 +1,336 @@
+@use 'function' as *;
+@use '../common/var' as *;
+// forward mixins
+@forward 'config';
+@forward 'function';
+@forward '_var';
+@use 'config' as *;
+@use 'sass:string';
+@use 'sass:map';
+
+$B: null;
+$E: null;
+
+/**
+ * 响应式断点管理工具，用于根据预定义的断点生成媒体查询
+ * @param {string} $key - 断点的键名 xs、sm、md、lg、xl
+ * @param {map} $map - 断点配置
+ */
+@mixin res($key, $map: $breakpoints) {
+  // 检查 Map 中是否存在指定的键
+  @if map.has-key($map, $key) {
+    // string.unquote 去除字符串的引号，可直接用于 css
+    // @media only screen and (max-width: 768px) {
+    @media only screen and #{string.unquote(map.get($map, $key))} {
+      // 接收调用 mixin 时传入的内容块
+      @content;
+    }
+  } @else {
+    // 如果传入的 $key 不存在于 $map 中
+    // 警告内容："Undefined points: 断点映射表内容"
+    @warn "Undefined points: `#{$map}`";
+  }
+}
+
+// 自定义滚动条样式,让组件的滚动条更美观
+// .el-table { @include scroll-bar; }
+// el-table::-webkit-scrollbar { ... }
+@mixin scrollbar {
+  // 滚动条滑块的背景色
+  $scrollbar-thumb-background: getCssVar('text-color', 'disabled');
+  // 滚动条轨道的背景色
+  $scrollbar-track-background: getCssVar('fill-color', 'blank');
+
+  &::-webkit-scrollbar {
+    z-index: 11;
+    width: 6px;
+
+    &:horizontal {
+      height: 6px;
+    }
+
+    // 滚动条滑块 -- 用户可以拖动的小方块
+    &-thumb {
+      border-radius: 5px;
+      width: 6px;
+      background: $scrollbar-thumb-background;
+    }
+
+    // 滚动条角落 -- 滚动条的右下角
+    &-corner {
+      background: $scrollbar-track-background;
+    }
+
+    // 滚动条轨道样式 -- 滑块移动的背景区域
+    &-track {
+      background: $scrollbar-track-background;
+
+      // 轨道片段
+      &-piece {
+        background: $scrollbar-track-background;
+        width: 6px;
+      }
+    }
+  }
+}
+
+// 生成块级元素的样式
+// @include b('input')    → $B = 'el-input'
+@mixin b($block) {
+  // 将 $B 变量提升为全局变量，在 mixin 外部也能访问。
+  $B: $namespace + $common-separator + $block !global;
+
+  .#{$B} {
+    @content;
+  }
+}
+
+@mixin e($element) {
+  $E: $element !global;
+  $selector: &;
+  $currentSelector: '';
+  @each $unit in $element {
+    $currentSelector: #{$currentSelector +
+      '.' +
+      $B +
+      $element-separator +
+      $unit +
+      ','};
+  }
+  @if hitAllSpecialNestRule($selector) {
+    // @at-root 编译成 CSS 时，将这些规则提升到文档的根层级，从而跳出父级选择器的嵌套限制
+    @at-root {
+      #{$selector} {
+        #{$currentSelector} {
+          @content;
+        }
+      }
+    }
+  } @else {
+    @at-root {
+      #{$currentSelector} {
+        @content;
+      }
+    }
+  }
+}
+
+// 用于生成修饰符（Modifier）级别样式
+@mixin m($modifier) {
+  $selector: &;
+  $currentSelector: '';
+  @each $unit in $modifier {
+    $currentSelector: #{$currentSelector +
+      $selector +
+      $modifier-separator +
+      $unit +
+      ','};
+  }
+
+  @at-root {
+    #{$currentSelector} {
+      @content;
+    }
+  }
+}
+
+// 用于生成修饰符（Modifier）级别样式
+// $modifier 样式修饰符
+// $E-flag 样式修饰符的元素级修饰符
+@mixin configurable-m($modifier, $E-flag: false) {
+  // 保存当前选择器上下文
+  $selector: &;
+  // 初始化插值变量为空字符串
+  $interpolation: '';
+
+  @if $E-flag {
+    // __large
+    $interpolation: $element-separator + $E-flag;
+  }
+
+  @at-root {
+    #{$selector} {
+      .#{$B + $interpolation + $modifier-separator + $modifier} {
+        @content;
+      }
+    }
+  }
+}
+
+/*
+@include b(button) {
+  // 基础按钮样式
+  padding: 10px 20px;
+
+  @include e(icon) {
+    // 图标元素样式
+    width: 16px;
+    height: 16px;
+
+    // 使用 spec-selector 创建特定选择器
+    @include spec-selector('', icon, large) {
+      // 这将生成 .el-button__icon--large 选择器
+      width: 20px;
+      height: 20px;
+    }
+
+    // 另一个示例
+    @include spec-selector('&:hover', icon, active) {
+      // 这将生成 .el-button__icon--active:hover 选择器
+      color: red;
+    }
+  }
+}
+
+.el-button {
+  padding: 10px 20px;
+}
+
+.el-button__icon {
+  width: 16px;
+  height: 16px;
+}
+
+.el-button__icon--large {
+  width: 20px;
+  height: 20px;
+}
+
+.el-button__icon--active:hover {
+  color: red;
+}
+
+ */
+@mixin spec-selector(
+  $specSelector: '',
+  $element: $E,
+  $modifier: false,
+  $block: $B
+) {
+  $modifierCombo: '';
+
+  @if $modifier {
+    $modifierCombo: $modifier-separator + $modifier;
+  }
+
+  @at-root {
+    #{&}#{$specSelector}.#{$block
+      + $element-separator
+      + $element
+      + $modifierCombo} {
+      @content;
+    }
+  }
+}
+
+// 应用元素修饰符样式
+@mixin meb($modifier: false, $element: $E, $block: $B) {
+  $selector: &;
+  $modifierCombo: '';
+
+  @if $modifier {
+    $modifierCombo: $modifier-separator + $modifier;
+  }
+
+  @at-root {
+    #{$selector} {
+      #{$block + $element-separator + $element + $modifierCombo} {
+        @content;
+      }
+    }
+  }
+}
+
+// 状态选择器
+@mixin when($state) {
+  @at-root {
+    &.#{$state-prefix + $state} {
+      @content;
+    }
+  }
+}
+
+// TODO: 待理解
+@mixin extend-rule($name) {
+  @extend #{'%shared-' + $name} !optional;
+}
+
+// TODO: 待理解
+@mixin share-rule($name) {
+  $rule-name: '%shared-' + $name;
+
+  @at-root #{$rule-name} {
+    @content;
+  }
+}
+
+// TODO: 待理解
+@mixin pseudo($pseudo) {
+  @at-root #{&}#{':#{$pseudo}'} {
+    @content;
+  }
+}
+
+//
+// $background: 弹出框背景色
+// $border: 弹出框边框样式
+// $box-shadow: 弹出框阴影
+@mixin picker-popper($background, $border, $box-shadow) {
+  &.#{$namespace}-popper {
+    background: $background;
+    border: $border;
+    box-shadow: $box-shadow;
+  }
+
+  .#{namespace}-popper__arrow {
+    &::before {
+      border: $border;
+    }
+  }
+
+  @each $placement,
+    $adjacency
+      in ('top': 'left', 'bottom': 'right', 'left': 'bottom', 'right': 'top')
+  {
+    &[data-popper-placement^='#{$placement}'] {
+      .#{$namespace}-popper__arrow::before {
+        border-#{$placement}-color: transparent;
+        border-#{$adjacency}-color: transparent;
+      }
+    }
+  }
+}
+
+// 暗黑模式
+@mixin dark($block) {
+  html.dark {
+    @include b($block) {
+      @content;
+    }
+  }
+}
+
+@mixin inset-input-border($color, $important: false) {
+  @if $important == true {
+    box-shadow: 0 0 0 1px $color inset !important;
+  } @else {
+    box-shadow: 0 0 0 1px $color inset;
+  }
+}
+
+@mixin reset-button($outline-offset: 2px) {
+  cursor: pointer;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
+  appearance: none;
+  border: none;
+  border-radius: getCssVar('border-radius', 'base');
+  outline: none;
+  transition: transform getCssVar('transition-duration-fast') ease-in-out;
+
+  &:focus-visible {
+    outline: 2px solid getCssVar('color-primary');
+    outline-offset: $outline-offset;
+  }
+}

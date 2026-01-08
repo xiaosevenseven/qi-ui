@@ -1,0 +1,8 @@
+{
+  "name": "@qi-ui/components",
+  "license": "ISC",
+  "dependencies": {
+    "vue": "catalog:",
+    "@vue/test-utils": "catalog:"
+  }
+}

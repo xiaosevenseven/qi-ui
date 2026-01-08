@@ -1,0 +1,14 @@
+{
+  "name": "@qi-ui/utils",
+  "license": "ISC",
+  "devDependencies": {
+    "@vue/shared": "catalog:",
+    "@vue/test-utils": "^2.4.6",
+    "vue": "catalog:"
+  },
+  "dependencies": {
+    "@element-plus/icons-vue": "catalog:",
+    "@vueuse/core": "^14.1.0",
+    "lodash-unified": "catalog:"
+  }
+}
