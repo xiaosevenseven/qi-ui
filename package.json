@@ -1,0 +1,27 @@
+{
+  "private": true,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.26.2",
+  "dependencies": {
+    "@qi-ui/components": "workspace:*",
+    "@qi-ui/constants": "workspace:*",
+    "@qi-ui/directives": "workspace:*",
+    "@qi-ui/hooks": "workspace:*",
+    "@element-plus/icons-vue": "^2.3.2",
+    "@qi-ui/locale": "workspace:*",
+    "@qi-ui/test-utils": "workspace:*",
+    "@qi-ui/theme-chalk": "workspace:*",
+    "@qi-ui/utils": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.7",
+    "typescript": "^5.9.3",
+    "vite": "^7.3.1",
+    "vue": "^3.5.26"
+  }
+}

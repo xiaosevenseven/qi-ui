@@ -1,0 +1,13 @@
+packages:
+  - packages/*
+  - docs
+  - play
+  - internal/*
+
+
+
+shamefullyHoist: true
+
+shellEmulator: true
+
+strictPeerDependencies: false
