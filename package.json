@@ -1,27 +1,50 @@
 {
   "private": true,
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "packageManager": "pnpm@10.26.2",
+  "keywords": [],
+  "license": "ISC",
+  "author": "",
+  "scripts": {
+    "format": "prettier --write --experimental-cli .",
+    "lint": "eslint . --ext .vue,.js,.ts,.jsx,.tsx,.md,.json --max-warnings 0 --cache --concurrency=auto",
+    "lint:fix": "pnpm run lint --fix",
+    "typecheck": "pnpm run \"/^typecheck:/\"",
+    "typecheck:web": "vue-tsc -p tsconfig.web.json --composite false --noEmit",
+    "typecheck:play": "vue-tsc -p tsconfig.play.json --composite false --noEmit",
+    "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
+    "typecheck:vite-config": "vue-tsc -p tsconfig.vite-config.json --composite false --noEmit",
+    "typecheck:vitest": "vue-tsc -p tsconfig.vitest.json --composite false --noEmit",
+    "prepare": "husky"
+  },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.3.2",
     "@qi-ui/components": "workspace:*",
     "@qi-ui/constants": "workspace:*",
     "@qi-ui/directives": "workspace:*",
     "@qi-ui/hooks": "workspace:*",
-    "@element-plus/icons-vue": "^2.3.2",
     "@qi-ui/locale": "workspace:*",
     "@qi-ui/test-utils": "workspace:*",
     "@qi-ui/theme-chalk": "workspace:*",
     "@qi-ui/utils": "workspace:*"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.3.1",
+    "@commitlint/config-conventional": "^20.3.1",
     "@types/node": "^24.10.7",
+    "cz-git": "^1.12.0",
+    "czg": "^1.12.0",
+    "eslint": "^9.39.2",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.7.4",
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vue": "^3.5.26"
+  },
+  "lint-staged": {
+    "*.{vue,js,ts,jsx,tsx,md,json,scss}": [
+      "eslint --fix --concurrency=auto",
+      "prettier --write --experimental-cli"
+    ]
   }
 }

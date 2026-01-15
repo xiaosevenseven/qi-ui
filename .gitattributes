@@ -1,0 +1,9 @@
+# 匹配所有文件， Git 自动判断文件是文本还是二进制， 强制使用 LF（\n）作为换行符
+* text=auto eol=lf
+
+# GitHub 语言统计配置
+*.ts linguist-detectable=false
+*.css linguist-detectable=false
+*.scss linguist-detectable=false
+*.js linguist-detectable=true
+*.vue linguist-detectable=true

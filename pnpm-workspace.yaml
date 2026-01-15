@@ -4,8 +4,6 @@ packages:
   - play
   - internal/*
 
-
-
 shamefullyHoist: true
 
 shellEmulator: true
