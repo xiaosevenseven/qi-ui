@@ -131,3 +131,39 @@ Step 3: 配置 lint-staged
   }
 }
 ```
+
+Step 4: 配置 Commitlint
+
+创建 commitlint.config.mjs（推荐使用 ESM 格式）
+
+```js
+
+```
+
+规则格式为：'规则名': [级别, '适用条件', 值]
+
+错误级别：
+
+0 - 禁用规则
+1 - 警告（不阻止提交）
+2 - 错误（阻止提交）
+
+适用条件：
+
+'always' - 必须满足
+'never' - 必须不满足
+
+Step 5: 配置 cz-git
+
+Step 6: 配置 package.json
+
+```json
+{
+  "scripts": {
+    "cz": "czg",
+    "commit": "czg",
+    "lint:commit": "commitlint --edit",
+    "prepare": "husky"
+  }
+}
+```

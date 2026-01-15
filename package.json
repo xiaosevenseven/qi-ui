@@ -14,6 +14,9 @@
     "typecheck:node": "tsc -p tsconfig.node.json --noEmit",
     "typecheck:vite-config": "vue-tsc -p tsconfig.vite-config.json --composite false --noEmit",
     "typecheck:vitest": "vue-tsc -p tsconfig.vitest.json --composite false --noEmit",
+    "cz": "czg",
+    "commit": "czg",
+    "lint:commit": "commitlint --edit",
     "prepare": "husky"
   },
   "dependencies": {
@@ -40,6 +43,11 @@
     "typescript": "^5.9.3",
     "vite": "^7.3.1",
     "vue": "^3.5.26"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-git"
+    }
   },
   "lint-staged": {
     "*.{vue,js,ts,jsx,tsx,md,json,scss}": [
